@@ -4,7 +4,7 @@ import { getToken } from 'next-auth/jwt'
 import { Locale, i18n } from '@/i18n.config'
 import { CustomMiddleware } from './chain'
 
-const protectedPaths = ['/dashboard']
+const protectedPaths = ['/dashboard', '/dashboard/:path*']
 
 function getProtectedRoutes(protectedPaths: string[], locales: Locale[]) {
   let protectedPathsWithLocale = [...protectedPaths]
@@ -27,8 +27,11 @@ export function withAuthMiddleware(middleware: CustomMiddleware) {
     // Create a response object to pass down the chain
     const response = NextResponse.next()
 
-    const token = await getToken({ req: request })
-
+    const token = await getToken({
+      req: request,
+      secret: "secret",
+      cookieName: 'next-auth.session-token'
+    })
     // @ts-ignore
     request.nextauth = request.nextauth || {}
     // @ts-ignore
